@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { unstable_rethrow } from "next/navigation";
 
-import { signIn } from "@/services/auth-service";
+import { getCurrentPortalUser, getPortalHomePath, signIn } from "@/services/auth-service";
 import { parseLoginForm } from "@/utils/validation/auth";
 
 export async function loginAction(formData: FormData) {
@@ -20,5 +20,8 @@ export async function loginAction(formData: FormData) {
     redirect("/login?error=" + encodeURIComponent(message));
   }
 
-  redirect("/dashboard");
+  const portalUser = await getCurrentPortalUser();
+  const homePath = portalUser ? getPortalHomePath(portalUser.role) : "/login";
+
+  redirect(homePath);
 }

@@ -34,8 +34,13 @@ export async function signIn(input: AuthFormInput): Promise<void> {
     readPortalUserRole(data.user?.app_metadata.role) ??
     "staff";
 
+  const clientId =
+    typeof data.user?.user_metadata.client_id === "string"
+      ? data.user.user_metadata.client_id
+      : undefined;
+
   if (data.user) {
-    await ensurePortalUserProfile(data.user, role);
+    await ensurePortalUserProfile(data.user, role, clientId);
   }
 }
 
@@ -48,6 +53,7 @@ export async function signUp(input: RegistrationFormInput, callbackUrl: string):
       emailRedirectTo: callbackUrl,
       data: {
         role: input.role,
+        ...(input.client_id ? { client_id: input.client_id } : {}),
       },
     },
   });
@@ -83,7 +89,12 @@ export async function finalizeAuthFromOtp({
     readPortalUserRole(data.user.app_metadata.role) ??
     "client";
 
-  await ensurePortalUserProfile(data.user, role);
+  const clientId =
+    typeof data.user.user_metadata.client_id === "string"
+      ? data.user.user_metadata.client_id
+      : undefined;
+
+  await ensurePortalUserProfile(data.user, role, clientId);
 }
 
 export async function signOut(): Promise<void> {

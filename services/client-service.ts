@@ -40,6 +40,20 @@ export async function listClientsForSelect(): Promise<Pick<ClientRecord, "id" | 
   return data as Pick<ClientRecord, "id" | "name">[];
 }
 
+export async function listClientsPublic(): Promise<Pick<ClientRecord, "id" | "name">[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("clients")
+    .select("id, name")
+    .order("name", { ascending: true });
+
+  if (error) {
+    return [];
+  }
+
+  return (data ?? []) as Pick<ClientRecord, "id" | "name">[];
+}
+
 export async function createClientRecord(input: ClientInput): Promise<ClientRecord> {
   await requirePortalRole("staff");
 

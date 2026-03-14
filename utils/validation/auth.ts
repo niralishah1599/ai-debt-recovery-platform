@@ -7,6 +7,7 @@ export type AuthFormInput = {
 
 export type RegistrationFormInput = AuthFormInput & {
   role: PortalUserRole;
+  client_id?: string;
 };
 
 function readString(formData: FormData, key: string): string {
@@ -41,8 +42,15 @@ export function parseRegistrationForm(formData: FormData): RegistrationFormInput
     throw new Error("Select a valid user role.");
   }
 
-  return {
-    ...parseLoginForm(formData),
-    role,
-  };
+  if (role === "client") {
+    const clientId = formData.get("client_id");
+
+    if (typeof clientId !== "string" || !clientId.trim()) {
+      throw new Error("Select a client organization for this account.");
+    }
+
+    return { ...parseLoginForm(formData), role, client_id: clientId.trim() };
+  }
+
+  return { ...parseLoginForm(formData), role };
 }

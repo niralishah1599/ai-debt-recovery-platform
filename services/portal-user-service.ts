@@ -1,6 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
+import { requirePortalRole } from "@/services/auth-service";
 import type { PortalUserRole } from "@/utils/validation/auth";
 
 export type PortalUserRecord = {
@@ -41,14 +42,57 @@ export async function getPortalUserForCurrentSession(): Promise<PortalUserRecord
   return data as PortalUserRecord | null;
 }
 
+export async function listClientPortalUsers(): Promise<PortalUserRecord[]> {
+  await requirePortalRole("staff");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("portal_users")
+    .select("id, auth_user_id, email, role, client_id, debtor_id, created_at")
+    .eq("role", "client")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Unable to load client portal users: ${error.message}`);
+  }
+
+  return data as PortalUserRecord[];
+}
+
+export async function assignPortalUserToClient(
+  portalUserId: string,
+  clientId: string,
+): Promise<void> {
+  await requirePortalRole("staff");
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("portal_users")
+    .update({ client_id: clientId })
+    .eq("id", portalUserId)
+    .eq("role", "client");
+
+  if (error) {
+    throw new Error(`Unable to assign portal user to client: ${error.message}`);
+  }
+}
+
 export async function ensurePortalUserProfile(
   user: User,
   role: PortalUserRole,
+  clientId?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const existingProfile = await getPortalUserForCurrentSession();
 
   if (existingProfile) {
+    // If the profile exists but client_id is missing, patch it now.
+    if (role === "client" && clientId && !existingProfile.client_id) {
+      await supabase
+        .from("portal_users")
+        .update({ client_id: clientId })
+        .eq("id", existingProfile.id);
+    }
     return;
   }
 
@@ -56,6 +100,7 @@ export async function ensurePortalUserProfile(
     auth_user_id: user.id,
     email: user.email ?? "",
     role,
+    ...(role === "client" && clientId ? { client_id: clientId } : {}),
   });
 
   if (error) {
