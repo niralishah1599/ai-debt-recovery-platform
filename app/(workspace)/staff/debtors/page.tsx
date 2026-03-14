@@ -12,7 +12,7 @@ export default async function StaffDebtorsPage() {
     <>
       <section className="panel panel-body" style={{ borderTop: "2px solid var(--accent)" }}>
         <span className="eyebrow eyebrow-soft">Borrower Profiles</span>
-        <h1 className="heading-xl">Debtor<br />Management</h1>
+        <h1 className="heading-xl">Debtor Management</h1>
         <p className="body-copy">
           Maintain debtor identities, contact details, and compliance preferences linked to the
           responsible creditor client.

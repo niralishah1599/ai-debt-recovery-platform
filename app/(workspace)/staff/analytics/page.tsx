@@ -1,3 +1,4 @@
+import { AnimatedChart } from "@/components/workspace/animated-chart";
 import { getAnalyticsDashboardData } from "@/services/analytics-service";
 import { formatCurrency, formatDecimal, formatPercent } from "@/utils/format-number";
 
@@ -13,7 +14,7 @@ export default async function StaffAnalyticsPage() {
       {/* ── Header ── */}
       <section className="panel panel-body" style={{ borderTop: "2px solid var(--accent)" }}>
         <span className="eyebrow eyebrow-soft">Analytics</span>
-        <h1 className="heading-xl">Portfolio<br />Intelligence</h1>
+        <h1 className="heading-xl">Portfolio Intelligence</h1>
         <p className="body-copy">
           Live portfolio health, payment recovery, communication throughput, and compliance
           pressure derived from current platform activity.
@@ -64,38 +65,24 @@ export default async function StaffAnalyticsPage() {
       <section className="two-column-grid">
         <div className="panel panel-body">
           <h2 className="section-title">7-Day Payment Volume</h2>
-          <div className="chart-list" aria-label="Payment volume over the last seven days">
-            {analytics.activity.payments.map((point) => (
-              <div className="chart-row" key={`pay-${point.label}`}>
-                <span className="chart-label">{point.label}</span>
-                <div className="chart-track">
-                  <div
-                    className="chart-bar chart-bar-success"
-                    style={{ width: `${(point.value / maxPaymentValue) * 100}%` }}
-                  />
-                </div>
-                <span className="chart-value">{formatCurrency(point.value)}</span>
-              </div>
-            ))}
-          </div>
+          <AnimatedChart
+            ariaLabel="Payment volume over the last seven days"
+            colorVar="var(--success)"
+            format="currency"
+            max={maxPaymentValue}
+            points={analytics.activity.payments}
+          />
         </div>
 
         <div className="panel panel-body">
           <h2 className="section-title">7-Day Communication Activity</h2>
-          <div className="chart-list" aria-label="Message sends over the last seven days">
-            {analytics.activity.messages.map((point) => (
-              <div className="chart-row" key={`msg-${point.label}`}>
-                <span className="chart-label">{point.label}</span>
-                <div className="chart-track">
-                  <div
-                    className="chart-bar chart-bar-ai"
-                    style={{ width: `${(point.value / maxMessageValue) * 100}%` }}
-                  />
-                </div>
-                <span className="chart-value">{point.value}</span>
-              </div>
-            ))}
-          </div>
+          <AnimatedChart
+            ariaLabel="Message sends over the last seven days"
+            colorVar="var(--teal)"
+            format="number"
+            max={maxMessageValue}
+            points={analytics.activity.messages}
+          />
         </div>
       </section>
 
@@ -103,20 +90,13 @@ export default async function StaffAnalyticsPage() {
       <section className="two-column-grid">
         <div className="panel panel-body">
           <h2 className="section-title">7-Day Compliance Blocks</h2>
-          <div className="chart-list" aria-label="Compliance blocks over the last seven days">
-            {analytics.activity.blocks.map((point) => (
-              <div className="chart-row" key={`blk-${point.label}`}>
-                <span className="chart-label">{point.label}</span>
-                <div className="chart-track">
-                  <div
-                    className="chart-bar chart-bar-danger"
-                    style={{ width: `${(point.value / maxBlockValue) * 100}%` }}
-                  />
-                </div>
-                <span className="chart-value">{point.value}</span>
-              </div>
-            ))}
-          </div>
+          <AnimatedChart
+            ariaLabel="Compliance blocks over the last seven days"
+            colorVar="var(--danger)"
+            format="number"
+            max={maxBlockValue}
+            points={analytics.activity.blocks}
+          />
         </div>
 
         <div className="panel panel-body">

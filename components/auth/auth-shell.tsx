@@ -103,7 +103,7 @@ export function AuthShell({
             </div>
 
             <h1 className="heading-xl" style={{ marginBottom: "10px" }}>
-              Recover More.<br />Comply Always.
+              Smart Debt Recovery
             </h1>
             <p className="body-copy" style={{ fontSize: "13.5px" }}>
               The end-to-end platform for modern debt recovery — combining AI-driven outreach,

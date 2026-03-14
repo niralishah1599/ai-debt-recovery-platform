@@ -354,7 +354,7 @@ button, input, select, textarea { font: inherit; }
 /* ─── Content Shell — offset right of sidebar ───────────────────── */
 .content-shell {
   margin-left: var(--sidebar-w);
-  flex: 1;
+  width: calc(100% - var(--sidebar-w));
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -415,7 +415,7 @@ button, input, select, textarea { font: inherit; }
 .stack {
   display: grid;
   gap: 18px;
-  max-width: 1180px;
+  max-width: 1500px;
 }
 
 /* ─── Panels ─────────────────────────────────────────────────────── */

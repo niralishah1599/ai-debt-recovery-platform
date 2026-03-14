@@ -15,7 +15,7 @@ export default async function StaffAccountsPage() {
     <>
       <section className="panel panel-body" style={{ borderTop: "2px solid var(--accent)" }}>
         <span className="eyebrow eyebrow-soft">Debt Accounts</span>
-        <h1 className="heading-xl">Account<br />Lifecycle</h1>
+        <h1 className="heading-xl">Account Lifecycle</h1>
         <p className="body-copy">
           Create debt accounts and control their operational status throughout the full
           collection lifecycle.

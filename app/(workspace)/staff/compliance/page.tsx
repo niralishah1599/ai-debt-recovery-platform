@@ -23,7 +23,7 @@ export default async function StaffCompliancePage() {
       {/* ── Header ── */}
       <section className="panel panel-body" style={{ borderTop: "2px solid var(--accent)" }}>
         <span className="eyebrow eyebrow-soft">Compliance Engine</span>
-        <h1 className="heading-xl">Regulatory<br />Guard Rails</h1>
+        <h1 className="heading-xl">Regulatory Guard Rails</h1>
         <p className="body-copy">
           Define deterministic compliance rules and audit every allow or block decision
           produced during campaign execution. Full event trail with timestamps.

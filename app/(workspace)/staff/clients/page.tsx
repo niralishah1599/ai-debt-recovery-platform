@@ -9,7 +9,7 @@ export default async function StaffClientsPage() {
     <>
       <section className="panel panel-body" style={{ borderTop: "2px solid var(--accent)" }}>
         <span className="eyebrow eyebrow-soft">Client Management</span>
-        <h1 className="heading-xl">Creditor<br />Organizations</h1>
+        <h1 className="heading-xl">Creditor Organizations</h1>
         <p className="body-copy">
           Create and maintain creditor organizations. These records scope all debtor profiles and accounts.
         </p>
