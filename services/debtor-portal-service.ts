@@ -23,12 +23,28 @@ export type DebtorPortalSummary = {
 export type DebtorPortalAccountRecord = {
   id: string;
   balance: string;
+  original_balance: string;
   status: "active" | "paid" | "suppressed" | "closed";
   created_at: string;
   clients: {
     id: string;
     name: string;
   } | null;
+};
+
+export type MilestoneKey = "first_payment" | "quarter_way" | "halfway" | "almost_free" | "debt_free";
+
+export type DebtorMilestone = {
+  id: string;
+  account_id: string;
+  milestone_key: MilestoneKey;
+  points: number;
+  awarded_at: string;
+};
+
+export type DebtorGamificationSummary = {
+  totalPoints: number;
+  milestones: DebtorMilestone[];
 };
 
 export type DebtorPortalPaymentRecord = {
@@ -61,6 +77,14 @@ type DebtorRecord = {
 
 type AccountQueryRow = Omit<DebtorPortalAccountRecord, "clients"> & {
   clients: DebtorPortalAccountRecord["clients"] | DebtorPortalAccountRecord["clients"][];
+};
+
+type MilestoneQueryRow = {
+  id: string;
+  account_id: string;
+  milestone_key: MilestoneKey;
+  points: number;
+  awarded_at: string;
 };
 
 type PaymentQueryRow = Omit<DebtorPortalPaymentRecord, "accounts"> & {
@@ -165,7 +189,7 @@ export async function listDebtorPortalAccounts(): Promise<DebtorPortalAccountRec
   const { supabase } = await requireDebtorContext();
   const { data, error } = await supabase
     .from("accounts")
-    .select("id, balance, status, created_at, clients(id, name)")
+    .select("id, balance, original_balance, status, created_at, clients(id, name)")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -173,6 +197,23 @@ export async function listDebtorPortalAccounts(): Promise<DebtorPortalAccountRec
   }
 
   return (data as AccountQueryRow[]).map(normalizeAccount);
+}
+
+export async function getDebtorGamificationSummary(): Promise<DebtorGamificationSummary> {
+  const { supabase } = await requireDebtorContext();
+  const { data, error } = await supabase
+    .from("debtor_milestones")
+    .select("id, account_id, milestone_key, points, awarded_at")
+    .order("awarded_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`Unable to load gamification data: ${error.message}`);
+  }
+
+  const milestones = (data ?? []) as MilestoneQueryRow[];
+  const totalPoints = milestones.reduce((sum, m) => sum + m.points, 0);
+
+  return { totalPoints, milestones };
 }
 
 export async function listDebtorPortalPayments(
