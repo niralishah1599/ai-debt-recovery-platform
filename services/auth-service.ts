@@ -53,7 +53,6 @@ export async function signUp(input: RegistrationFormInput, callbackUrl: string):
       emailRedirectTo: callbackUrl,
       data: {
         role: input.role,
-        ...(input.client_id ? { client_id: input.client_id } : {}),
       },
     },
   });
