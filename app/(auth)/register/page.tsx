@@ -1,5 +1,4 @@
 import { AuthShell } from "@/components/auth/auth-shell";
-import { listClientsPublic } from "@/services/client-service";
 
 import { RegisterForm } from "./register-form";
 
@@ -10,7 +9,6 @@ export default async function RegisterPage({
 }) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const error = resolvedSearchParams?.error;
-  const clients = await listClientsPublic();
 
   return (
     <AuthShell
@@ -21,7 +19,7 @@ export default async function RegisterPage({
       description="Create your account to start managing debt recovery portfolios with AI-assisted outreach and automated compliance."
       title="Create account"
     >
-      <RegisterForm clients={clients} error={error} />
+      <RegisterForm error={error} />
     </AuthShell>
   );
 }

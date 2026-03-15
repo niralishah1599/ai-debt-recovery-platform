@@ -2,11 +2,19 @@ import { createDebtorAction, updateDebtorAction } from "@/app/(workspace)/staff/
 import { listClientsForSelect } from "@/services/client-service";
 import { listDebtorsForStaff } from "@/services/debtor-service";
 
-export default async function StaffDebtorsPage() {
-  const [clients, debtors] = await Promise.all([
+export default async function StaffDebtorsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ created?: string; pwd?: string }>;
+}) {
+  const [clients, debtors, params] = await Promise.all([
     listClientsForSelect(),
     listDebtorsForStaff(),
+    searchParams ?? Promise.resolve({}),
   ]);
+
+  const createdEmail = (params as { created?: string; pwd?: string }).created;
+  const tempPassword = (params as { created?: string; pwd?: string }).pwd;
 
   return (
     <>
@@ -18,6 +26,24 @@ export default async function StaffDebtorsPage() {
           responsible creditor client.
         </p>
       </section>
+
+      {createdEmail && tempPassword && (
+        <section className="panel panel-body" style={{ borderLeft: "4px solid var(--accent)", background: "var(--surface-raised)" }}>
+          <h2 className="section-title">Debtor account created</h2>
+          <p className="body-copy">Share these login credentials with the debtor. The password is shown only once.</p>
+          <div style={{ display: "flex", gap: "2rem", marginTop: "0.75rem", flexWrap: "wrap" }}>
+            <div>
+              <span className="muted" style={{ fontSize: "0.8rem" }}>Email</span>
+              <p className="body-copy" style={{ fontWeight: 600, marginTop: "0.2rem" }}>{decodeURIComponent(createdEmail)}</p>
+            </div>
+            <div>
+              <span className="muted" style={{ fontSize: "0.8rem" }}>Temporary password</span>
+              <p className="body-copy" style={{ fontWeight: 600, marginTop: "0.2rem", fontFamily: "monospace", letterSpacing: "0.05em" }}>{decodeURIComponent(tempPassword)}</p>
+            </div>
+          </div>
+          <p className="muted" style={{ fontSize: "0.8rem", marginTop: "0.75rem" }}>The debtor can change their password after logging in from the debtor portal.</p>
+        </section>
+      )}
 
       <section className="two-column-grid">
         <div className="panel panel-body">

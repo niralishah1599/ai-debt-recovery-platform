@@ -94,7 +94,12 @@ export async function finalizeAuthFromOtp({
       ? data.user.user_metadata.client_id
       : undefined;
 
-  await ensurePortalUserProfile(data.user, role, clientId);
+  const debtorId =
+    typeof data.user.user_metadata.debtor_id === "string"
+      ? data.user.user_metadata.debtor_id
+      : undefined;
+
+  await ensurePortalUserProfile(data.user, role, clientId, debtorId);
 }
 
 export async function signOut(): Promise<void> {

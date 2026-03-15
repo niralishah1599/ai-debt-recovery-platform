@@ -33,7 +33,7 @@ export default async function ClientLayout({
   }
 
   if (!portalUser.client_id) {
-    redirect("/login?error=" + encodeURIComponent("Client assignment is missing."));
+    redirect("/pending");
   }
 
   return (

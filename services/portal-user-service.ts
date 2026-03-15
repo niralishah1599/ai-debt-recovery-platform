@@ -42,6 +42,40 @@ export async function getPortalUserForCurrentSession(): Promise<PortalUserRecord
   return data as PortalUserRecord | null;
 }
 
+export async function ensurePortalUserProfileForUser(
+  authUserId: string,
+  email: string,
+  role: PortalUserRole,
+  clientId?: string,
+  debtorId?: string,
+): Promise<void> {
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("portal_users")
+    .select("id, client_id, debtor_id")
+    .eq("auth_user_id", authUserId)
+    .maybeSingle();
+
+  if (existing) {
+    const patch: Record<string, string> = {};
+    if (clientId && !existing.client_id) patch.client_id = clientId;
+    if (debtorId && !existing.debtor_id) patch.debtor_id = debtorId;
+    if (Object.keys(patch).length > 0) {
+      await supabase.from("portal_users").update(patch).eq("id", existing.id);
+    }
+    return;
+  }
+
+  await supabase.from("portal_users").insert({
+    auth_user_id: authUserId,
+    email,
+    role,
+    ...(clientId ? { client_id: clientId } : {}),
+    ...(debtorId ? { debtor_id: debtorId } : {}),
+  });
+}
+
 export async function listClientPortalUsers(): Promise<PortalUserRecord[]> {
   await requirePortalRole("staff");
 
@@ -81,18 +115,30 @@ export async function ensurePortalUserProfile(
   user: User,
   role: PortalUserRole,
   clientId?: string,
+  debtorId?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const existingProfile = await getPortalUserForCurrentSession();
 
   if (existingProfile) {
-    // If the profile exists but client_id is missing, patch it now.
+    const patch: Record<string, string> = {};
+
     if (role === "client" && clientId && !existingProfile.client_id) {
-      await supabase
-        .from("portal_users")
-        .update({ client_id: clientId })
-        .eq("id", existingProfile.id);
+      patch.client_id = clientId;
     }
+
+    if (role === "debtor" && debtorId && !existingProfile.debtor_id) {
+      patch.debtor_id = debtorId;
+    }
+
+    if (role === "debtor" && clientId && !existingProfile.client_id) {
+      patch.client_id = clientId;
+    }
+
+    if (Object.keys(patch).length > 0) {
+      await supabase.from("portal_users").update(patch).eq("id", existingProfile.id);
+    }
+
     return;
   }
 
@@ -100,7 +146,8 @@ export async function ensurePortalUserProfile(
     auth_user_id: user.id,
     email: user.email ?? "",
     role,
-    ...(role === "client" && clientId ? { client_id: clientId } : {}),
+    ...(clientId ? { client_id: clientId } : {}),
+    ...(debtorId ? { debtor_id: debtorId } : {}),
   });
 
   if (error) {

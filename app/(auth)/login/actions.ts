@@ -21,7 +21,15 @@ export async function loginAction(formData: FormData) {
   }
 
   const portalUser = await getCurrentPortalUser();
-  const homePath = portalUser ? getPortalHomePath(portalUser.role) : "/login";
 
-  redirect(homePath);
+  if (!portalUser) {
+    redirect("/login");
+  }
+
+  // Client with no org assigned → show pending page directly (avoid layout redirect loop)
+  if (portalUser.role === "client" && !portalUser.client_id) {
+    redirect("/pending");
+  }
+
+  redirect(getPortalHomePath(portalUser.role));
 }

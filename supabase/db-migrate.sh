@@ -13,4 +13,7 @@ if [ -z "${DB_URL}" ]; then
   exit 1
 fi
 
-npx --yes supabase db push --db-url "${DB_URL}"
+# Use port 5432 (session mode) to avoid pgbouncer prepared-statement conflicts
+DB_URL_SESSION=$(echo "$DB_URL" | sed 's/:6543\//:5432\//' | sed 's/?pgbouncer=true//')
+
+npx --yes supabase db push --db-url "${DB_URL_SESSION}"

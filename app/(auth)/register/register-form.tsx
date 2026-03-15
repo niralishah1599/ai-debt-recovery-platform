@@ -1,26 +1,14 @@
 "use client";
 
-import { useActionState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 
 import { AuthSubmitButton } from "@/components/auth/auth-submit-button";
 import { registerAction } from "./actions";
 
-type ClientOption = { id: string; name: string };
-
-export function RegisterForm({
-  clients,
-  error: initialError,
-}: {
-  clients: ClientOption[];
-  error?: string;
-}) {
-  const [role, setRole] = useState("staff");
-
+export function RegisterForm({ error }: { error?: string }) {
   return (
     <form action={registerAction} className="form-stack">
-      {initialError ? <div className="error-note">{decodeURIComponent(initialError)}</div> : null}
+      {error ? <div className="error-note">{decodeURIComponent(error)}</div> : null}
 
       <div className="field">
         <label htmlFor="email">Work email</label>
@@ -41,38 +29,11 @@ export function RegisterForm({
 
       <div className="field">
         <label htmlFor="role">Portal role</label>
-        <select
-          defaultValue="staff"
-          id="role"
-          name="role"
-          required
-          onChange={(e) => setRole(e.target.value)}
-        >
+        <select defaultValue="staff" id="role" name="role" required>
           <option value="staff">Staff</option>
           <option value="client">Client</option>
         </select>
       </div>
-
-      {role === "client" && (
-        <div className="field">
-          <label htmlFor="client_id">Client organization</label>
-          <select defaultValue="" id="client_id" name="client_id" required>
-            <option disabled value="">
-              Select your organization
-            </option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          {clients.length === 0 && (
-            <span className="muted" style={{ fontSize: "0.8rem" }}>
-              No client organizations found. Ask staff to create one first.
-            </span>
-          )}
-        </div>
-      )}
 
       <div className="button-row">
         <AuthSubmitButton idleLabel="Create account" pendingLabel="Creating..." />

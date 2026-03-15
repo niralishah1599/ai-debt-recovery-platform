@@ -8,6 +8,7 @@ const debtorLinks = [
   { href: "/debtor/dashboard", label: "Dashboard" },
   { href: "/debtor/accounts", label: "Accounts" },
   { href: "/debtor/payments", label: "Payments" },
+  { href: "/debtor/settings", label: "Change Password" },
 ];
 
 export default async function DebtorLayout({
